@@ -105,7 +105,7 @@ function App() {
               <img src="/assets/empty.png" alt="Empty Transaction" />
             </div>
           ) : (
-            <div className="space-y-2 mt-3">
+            <div className="space-y-2 mt-3 pb-2 pr-4 overflow-y-auto h-[60vh] w-max">
               {transactions.map((transaction) => (
                 <Transaction key={transaction.id} transaction={transaction} />
               ))}

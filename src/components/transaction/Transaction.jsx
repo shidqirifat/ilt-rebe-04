@@ -18,13 +18,27 @@ const Label = ({ children }) => {
   );
 };
 
+const DisplayAmount = ({ transaction }) => {
+  const isDeposit = transaction.type === "deposit";
+
+  return (
+    <h3
+      className={cn("font-medium text-base leading-5", {
+        "text-green-500": isDeposit,
+        "text-red-500": !isDeposit,
+      })}
+    >
+      {!isDeposit && "-"}
+      {formatCurrency(transaction.amount)}
+    </h3>
+  );
+};
+
 export default function Transaction({ transaction }) {
   return (
     <div className="w-72 p-3 border border-slate-100 rounded-md shadow bg-white">
       <div className="flex items-center justify-between">
-        <h3 className="text-red-500 font-medium text-base leading-5">
-          {formatCurrency(transaction.amount)}
-        </h3>
+        <DisplayAmount transaction={transaction} />
         <Label>{transaction.type}</Label>
       </div>
 
