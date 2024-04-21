@@ -23,6 +23,12 @@ const transactionsReducer = (transactions = [], action = {}) => {
     return [...transactions, newTransaction];
   }
 
+  if (action.type === "transactions/cancel") {
+    const newTransactions = [...transactions];
+    newTransactions.pop();
+    return newTransactions;
+  }
+
   if (action.type === "transactions/reset") {
     return [];
   }

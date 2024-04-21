@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import useInputCurrency from "./hooks/useInputCurrency";
 import { formatNumber } from "./utils/currency";
 import Balanced from "./components/transaction/Balanced";
@@ -7,7 +7,13 @@ import Transaction from "./components/transaction/Transaction";
 import { Button } from "./components/ui/button";
 import { ListRestart } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { deposit, purge, reset, withdraw } from "./redux/transactions/action";
+import {
+  asyncDeposit,
+  asyncInitial,
+  asyncPurge,
+  asyncReset,
+  asyncWithdraw,
+} from "./redux/transactions/action";
 
 function App() {
   const { error, amount, setError, onChangeAmount, onResetAmount } =
@@ -41,7 +47,7 @@ function App() {
       return;
     }
 
-    dispatch(deposit(numberAmount));
+    dispatch(asyncDeposit(numberAmount));
     clearAmountAndError();
   };
 
@@ -55,7 +61,7 @@ function App() {
       return;
     }
 
-    dispatch(withdraw(numberAmount));
+    dispatch(asyncWithdraw(numberAmount));
     clearAmountAndError();
   };
 
@@ -65,13 +71,17 @@ function App() {
       return;
     }
 
-    dispatch(purge(balanced));
+    dispatch(asyncPurge(balanced));
     clearAmountAndError();
   };
 
   const resetTransaction = () => {
-    dispatch(reset());
+    dispatch(asyncReset());
   };
+
+  useEffect(() => {
+    dispatch(asyncInitial());
+  }, []);
 
   return (
     <>
