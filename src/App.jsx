@@ -6,10 +6,15 @@ import FormTransaction from "./components/transaction/FormTransaction";
 import Transaction from "./components/transaction/Transaction";
 import { Button } from "./components/ui/button";
 import { ListRestart } from "lucide-react";
-import { getTransactions, saveTransactions } from "./utils/transaction";
+import {
+  generateTransaction,
+  getTransactions,
+  saveTransactions,
+} from "./utils/transaction";
 
 function App() {
-  const { error, amount, setError, onChange, onReset } = useInputCurrency();
+  const { error, amount, setError, onChangeAmount, onResetAmount } =
+    useInputCurrency();
   const [transactions, setTransactions] = useState([]);
 
   const balanced = useMemo(() => {
@@ -20,33 +25,52 @@ function App() {
   }, [transactions]);
 
   const addTransaction = (type) => {
-    setError(null);
-
-    const isPurge = type === "purge";
     const numberAmount = formatNumber(amount);
+    if (type === "deposit") onDeposit(numberAmount);
+    else if (type === "withdraw") onWithdraw(numberAmount);
+    else onPurge();
+  };
 
-    if (numberAmount === 0 && !isPurge) {
+  const clearAmountAndError = () => {
+    setError(null);
+    onResetAmount();
+  };
+
+  const onDeposit = (numberAmount) => {
+    if (numberAmount === 0) {
       setError("Amount can not be zero");
       return;
     }
-    if (balanced === 0 && isPurge) {
-      setError("Your balanced is zero");
+
+    const transaction = generateTransaction("deposit", numberAmount);
+    setTransactions((prev) => [...prev, transaction]);
+    clearAmountAndError();
+  };
+
+  const onWithdraw = (numberAmount) => {
+    if (numberAmount === 0) {
+      setError("Amount can not be zero");
       return;
     }
-    if (balanced < numberAmount && type === "withdraw") {
+    if (balanced < numberAmount) {
       setError("Your balance is not enough");
       return;
     }
 
-    const transaction = {
-      id: +new Date(),
-      type,
-      amount: isPurge ? balanced : formatNumber(amount),
-      date: new Date().toISOString(),
-    };
-
+    const transaction = generateTransaction("withdraw", numberAmount);
     setTransactions((prev) => [...prev, transaction]);
-    onReset();
+    clearAmountAndError();
+  };
+
+  const onPurge = () => {
+    if (balanced === 0) {
+      setError("Your balanced is zero");
+      return;
+    }
+
+    const transaction = generateTransaction("purge", balanced);
+    setTransactions((prev) => [...prev, transaction]);
+    clearAmountAndError();
   };
 
   const resetTransaction = () => {
@@ -81,7 +105,7 @@ function App() {
           <FormTransaction
             error={error}
             value={amount}
-            onChange={onChange}
+            onChange={onChangeAmount}
             addTransaction={addTransaction}
           />
         </div>
@@ -93,10 +117,10 @@ function App() {
             </h2>
             <Button
               variant="secondary"
-              className="!p-0 rounded-full !w-12 !h-12"
+              className="!p-0 rounded-full !w-10 !h-10"
               onClick={resetTransaction}
             >
-              <ListRestart />
+              <ListRestart width={22} height={22} />
             </Button>
           </div>
 
@@ -105,7 +129,7 @@ function App() {
               <img src="/assets/empty.png" alt="Empty Transaction" />
             </div>
           ) : (
-            <div className="space-y-2 mt-3 pb-2 pr-4 overflow-y-auto h-[60vh] w-max">
+            <div className="space-y-2 mt-2 pb-2 pr-4 overflow-y-auto h-[60vh] w-max">
               {transactions.map((transaction) => (
                 <Transaction key={transaction.id} transaction={transaction} />
               ))}

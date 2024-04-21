@@ -5,13 +5,13 @@ import dayjs from "dayjs";
 const Label = ({ children }) => {
   return (
     <div
-      className={cn("py-[2px] px-3 rounded-md w-max", {
+      className={cn("px-3 rounded-md w-max", {
         "bg-sky-400": children === "deposit",
         "bg-pink-400": children === "withdraw",
         "bg-orange-400": children === "purge",
       })}
     >
-      <h4 className="text-white font-normal text-xs capitalize leading-4">
+      <h4 className="text-white font-normal text-xs capitalize leading-5">
         {children}
       </h4>
     </div>
@@ -36,7 +36,7 @@ const DisplayAmount = ({ transaction }) => {
 
 export default function Transaction({ transaction }) {
   return (
-    <div className="w-72 p-3 border border-slate-100 rounded-md shadow bg-white">
+    <div className="w-80 p-3 border border-slate-100 rounded-md shadow bg-white">
       <div className="flex items-center justify-between">
         <DisplayAmount transaction={transaction} />
         <Label>{transaction.type}</Label>

@@ -1,5 +1,19 @@
+import { Banknote, HandCoins, Landmark } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+
+const ButtonIcon = ({ onClick, children, icon }) => {
+  const IconTransaction = icon;
+
+  return (
+    <Button variant="secondary" onClick={onClick}>
+      <div className="flex items-center gap-1">
+        <IconTransaction width={18} height={18} />
+        <h4>{children}</h4>
+      </div>
+    </Button>
+  );
+};
 
 export default function FormTransaction({
   error,
@@ -13,22 +27,22 @@ export default function FormTransaction({
         placeholder="Insert amount"
         value={value}
         onChange={onChange}
-        className="w-48 text-base"
+        className="w-40 text-base"
       />
       {error && (
         <h4 className="text-red-500 text-sm font-normal leading-5">{error}</h4>
       )}
 
       <div className="flex gap-2 mt-2">
-        <Button variant="secondary" onClick={() => addTransaction("deposit")}>
+        <ButtonIcon icon={Landmark} onClick={() => addTransaction("deposit")}>
           Deposit
-        </Button>
-        <Button variant="secondary" onClick={() => addTransaction("withdraw")}>
+        </ButtonIcon>
+        <ButtonIcon icon={Banknote} onClick={() => addTransaction("withdraw")}>
           Withdraw
-        </Button>
-        <Button variant="secondary" onClick={() => addTransaction("purge")}>
+        </ButtonIcon>
+        <ButtonIcon icon={HandCoins} onClick={() => addTransaction("purge")}>
           Purge
-        </Button>
+        </ButtonIcon>
       </div>
     </div>
   );
