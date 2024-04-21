@@ -42,8 +42,10 @@ function App() {
       return;
     }
 
+    // @TODO dispatch deposit
     const transaction = generateTransaction("deposit", numberAmount);
     setTransactions((prev) => [...prev, transaction]);
+
     clearAmountAndError();
   };
 
@@ -57,8 +59,10 @@ function App() {
       return;
     }
 
+    // @TODO dispatch withdraw
     const transaction = generateTransaction("withdraw", numberAmount);
     setTransactions((prev) => [...prev, transaction]);
+
     clearAmountAndError();
   };
 
@@ -68,12 +72,15 @@ function App() {
       return;
     }
 
+    // @TODO dispatch purge
     const transaction = generateTransaction("purge", balanced);
     setTransactions((prev) => [...prev, transaction]);
+
     clearAmountAndError();
   };
 
   const resetTransaction = () => {
+    // @TODO dispatch reset
     setTransactions([]);
     saveTransactions([]);
   };
@@ -85,6 +92,7 @@ function App() {
   }, [transactions]);
 
   useEffect(() => {
+    // @TODO dispatch initial transactions
     const initialTransactions = getTransactions();
     setTransactions(initialTransactions);
   }, []);
