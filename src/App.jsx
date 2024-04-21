@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import useInputCurrency from "./hooks/useInputCurrency";
 import { formatNumber } from "./utils/currency";
 import Balanced from "./components/transaction/Balanced";
@@ -7,18 +7,12 @@ import Transaction from "./components/transaction/Transaction";
 import { Button } from "./components/ui/button";
 import { ListRestart } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  asyncDeposit,
-  asyncInitial,
-  asyncPurge,
-  asyncReset,
-  asyncWithdraw,
-} from "./redux/transactions/action";
+import { asyncDepositSlice } from "./redux/transactions/slice";
 
 function App() {
   const { error, amount, setError, onChangeAmount, onResetAmount } =
     useInputCurrency();
-  const transactions = useSelector((store) => store.transactions);
+  const transactions = useSelector((store) => store.transactions.history);
 
   const dispatch = useDispatch();
 
@@ -32,8 +26,6 @@ function App() {
   const addTransaction = (type) => {
     const numberAmount = formatNumber(amount);
     if (type === "deposit") onDeposit(numberAmount);
-    else if (type === "withdraw") onWithdraw(numberAmount);
-    else onPurge();
   };
 
   const clearAmountAndError = () => {
@@ -47,41 +39,9 @@ function App() {
       return;
     }
 
-    dispatch(asyncDeposit(numberAmount));
+    dispatch(asyncDepositSlice(numberAmount));
     clearAmountAndError();
   };
-
-  const onWithdraw = (numberAmount) => {
-    if (numberAmount === 0) {
-      setError("Amount can not be zero");
-      return;
-    }
-    if (balanced < numberAmount) {
-      setError("Your balance is not enough");
-      return;
-    }
-
-    dispatch(asyncWithdraw(numberAmount));
-    clearAmountAndError();
-  };
-
-  const onPurge = () => {
-    if (balanced === 0) {
-      setError("Your balanced is zero");
-      return;
-    }
-
-    dispatch(asyncPurge(balanced));
-    clearAmountAndError();
-  };
-
-  const resetTransaction = () => {
-    dispatch(asyncReset());
-  };
-
-  useEffect(() => {
-    dispatch(asyncInitial());
-  }, []);
 
   return (
     <>
@@ -112,7 +72,6 @@ function App() {
             <Button
               variant="secondary"
               className="!p-0 rounded-full !w-10 !h-10"
-              onClick={resetTransaction}
             >
               <ListRestart width={22} height={22} />
             </Button>
