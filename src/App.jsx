@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import useInputCurrency from "./hooks/useInputCurrency";
 import { formatNumber } from "./utils/currency";
 import Balanced from "./components/transaction/Balanced";
@@ -6,16 +6,15 @@ import FormTransaction from "./components/transaction/FormTransaction";
 import Transaction from "./components/transaction/Transaction";
 import { Button } from "./components/ui/button";
 import { ListRestart } from "lucide-react";
-import {
-  generateTransaction,
-  getTransactions,
-  saveTransactions,
-} from "./utils/transaction";
+import { useDispatch, useSelector } from "react-redux";
+import { deposit, purge, reset, withdraw } from "./redux/transactions/action";
 
 function App() {
   const { error, amount, setError, onChangeAmount, onResetAmount } =
     useInputCurrency();
-  const [transactions, setTransactions] = useState([]);
+  const transactions = useSelector((store) => store.transactions);
+
+  const dispatch = useDispatch();
 
   const balanced = useMemo(() => {
     return transactions.reduce((prev, curr) => {
@@ -42,10 +41,7 @@ function App() {
       return;
     }
 
-    // @TODO dispatch deposit
-    const transaction = generateTransaction("deposit", numberAmount);
-    setTransactions((prev) => [...prev, transaction]);
-
+    dispatch(deposit(numberAmount));
     clearAmountAndError();
   };
 
@@ -59,10 +55,7 @@ function App() {
       return;
     }
 
-    // @TODO dispatch withdraw
-    const transaction = generateTransaction("withdraw", numberAmount);
-    setTransactions((prev) => [...prev, transaction]);
-
+    dispatch(withdraw(numberAmount));
     clearAmountAndError();
   };
 
@@ -72,30 +65,13 @@ function App() {
       return;
     }
 
-    // @TODO dispatch purge
-    const transaction = generateTransaction("purge", balanced);
-    setTransactions((prev) => [...prev, transaction]);
-
+    dispatch(purge(balanced));
     clearAmountAndError();
   };
 
   const resetTransaction = () => {
-    // @TODO dispatch reset
-    setTransactions([]);
-    saveTransactions([]);
+    dispatch(reset());
   };
-
-  useEffect(() => {
-    if (transactions.length === 0) return;
-
-    saveTransactions(transactions);
-  }, [transactions]);
-
-  useEffect(() => {
-    // @TODO dispatch initial transactions
-    const initialTransactions = getTransactions();
-    setTransactions(initialTransactions);
-  }, []);
 
   return (
     <>
